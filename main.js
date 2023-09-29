@@ -1,10 +1,10 @@
 const express = require('express');
 const multer = require('multer');
-const fileType = require('file-type');
-const fs = require('fs');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const ffmpeg = require('fluent-ffmpeg');
+
+
 
 const app = express();
 
@@ -72,6 +72,6 @@ function convertWavToMp3(wavFilename) {
   });
 }
 
-app.listen(3000, () => {
+app.listen(3000, 'convert.dev.gert.me' () => {
   console.log('Server listening on port 3000');
 });
