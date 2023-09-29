@@ -6,6 +6,8 @@ COPY package*.json ./
 
 RUN npm install
 
+RUN apt-get update && apt-get install -y ffmpeg
+
 COPY . .
 
 EXPOSE 3051

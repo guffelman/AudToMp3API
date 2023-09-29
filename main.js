@@ -10,6 +10,11 @@ const app = express();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  next();
+});
+
 app.post('/convert', upload.single('file'), (req, res) => {
   const file = req.file;
 
@@ -24,7 +29,7 @@ app.post('/convert', upload.single('file'), (req, res) => {
   }
 
   const filename = `${uuidv4()}.wav`;
-  const filePath = path.join(__dirname, 'uploads', filename);
+  const filePath = path.join(path.dirname(new URL(import.meta.url).pathname), 'uploads', filename);
 
   // Use fs.writeFile to write the file asynchronously
   fs.writeFile(filePath, file.buffer, (err) => {
