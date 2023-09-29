@@ -3,8 +3,8 @@ const multer = require('multer');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const ffmpeg = require('fluent-ffmpeg');
-
-
+const fileType = require('file-type'); // Import fileType module
+const fs = require('fs'); // Import fs module
 
 const app = express();
 
@@ -27,22 +27,37 @@ app.post('/convert', upload.single('file'), (req, res) => {
   const filename = `${uuidv4()}.${fileTypeResult.ext}`;
   const filePath = path.join(__dirname, 'uploads', filename);
 
-  fs.writeFileSync(filePath, file.buffer);
-
-  convertWavToMp3(filePath)
-    .then((mp3Filename) => {
-      res.download(mp3Filename, (err) => {
-        if (err) {
-          console.error(err);
-        }
-        fs.unlinkSync(filePath);
-        fs.unlinkSync(mp3Filename);
-      });
-    })
-    .catch((err) => {
+  // Use fs.writeFile to write the file asynchronously
+  fs.writeFile(filePath, file.buffer, (err) => {
+    if (err) {
       console.error(err);
-      res.status(500).send('Internal Server Error');
-    });
+      return res.status(500).send('Internal Server Error');
+    }
+
+    convertWavToMp3(filePath)
+      .then((mp3Filename) => {
+        res.download(mp3Filename, (err) => {
+          if (err) {
+            console.error(err);
+          }
+          // Use fs.unlink to delete files asynchronously
+          fs.unlink(filePath, (err) => {
+            if (err) {
+              console.error(err);
+            }
+          });
+          fs.unlink(mp3Filename, (err) => {
+            if (err) {
+              console.error(err);
+            }
+          });
+        });
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send('Internal Server Error');
+      });
+  });
 });
 
 function isWavFile(wavFilename) {
@@ -72,6 +87,6 @@ function convertWavToMp3(wavFilename) {
   });
 }
 
-app.listen(3000, 'convert.dev.gert.me' () => {
-  console.log('Server listening on port 3000');
+app.listen(3051, () => {
+  console.log('Server listening on port 3051'); // Corrected the port number in the log message
 });

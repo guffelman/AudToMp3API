@@ -4,7 +4,7 @@ services:
   app:
     build: .
     ports:
-      - "3000:3000"
+      - "3051:3051"
     volumes:
       - ./uploads:/app/uploads
     network_mode: host
