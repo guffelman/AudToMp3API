@@ -1,10 +1,9 @@
-const express = require('express');
-const multer = require('multer');
-const path = require('path');
-const { v4: uuidv4 } = require('uuid');
-const ffmpeg = require('fluent-ffmpeg');
-const fileType = require('file-type'); // Import fileType module
-const fs = require('fs'); // Import fs module
+import express from 'express';
+import multer from 'multer';
+import fs from 'fs';
+import path from 'path';
+import { v4 as uuidv4 } from 'uuid';
+import ffmpeg from 'fluent-ffmpeg';
 
 const app = express();
 
@@ -18,13 +17,13 @@ app.post('/convert', upload.single('file'), (req, res) => {
     return res.status(400).send('No file uploaded');
   }
 
-  const fileTypeResult = fileType(file.buffer);
+  const ext = path.extname(file.originalname);
 
-  if (!fileTypeResult || !fileTypeResult.mime.startsWith('audio/')) {
+  if (ext !== '.wav') {
     return res.status(400).send('Invalid file type');
   }
 
-  const filename = `${uuidv4()}.${fileTypeResult.ext}`;
+  const filename = `${uuidv4()}.wav`;
   const filePath = path.join(__dirname, 'uploads', filename);
 
   // Use fs.writeFile to write the file asynchronously
@@ -60,17 +59,8 @@ app.post('/convert', upload.single('file'), (req, res) => {
   });
 });
 
-function isWavFile(wavFilename) {
-  const ext = path.extname(wavFilename);
-  return ext === '.wav';
-}
-
 function convertWavToMp3(wavFilename) {
   return new Promise((resolve, reject) => {
-    if (!isWavFile(wavFilename)) {
-      reject(new Error('Not a wav file'));
-    }
-
     const outputFile = wavFilename.replace('.wav', '.mp3');
 
     ffmpeg()
@@ -88,5 +78,5 @@ function convertWavToMp3(wavFilename) {
 }
 
 app.listen(3051, () => {
-  console.log('Server listening on port 3051'); // Corrected the port number in the log message
+  console.log('Server listening on port 3051');
 });
