@@ -15,6 +15,12 @@ app.use((req, res, next) => {
   next();
 });
 
+// route for index
+app.get('/', (req, res) => { 
+  // serve text
+  res.send('Wav to Mp3 Converter');
+});
+
 app.post('/convert', upload.single('file'), (req, res) => {
   const file = req.file;
 
