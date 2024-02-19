@@ -65,6 +65,6 @@ app.post('/convert', upload.single('file'), (req, res) => {
     .pipe(res);
 });
 
-app.listen(8080, () => {
-  console.log('Server listening on port 8080');
+app.listen(80, () => {
+  console.log('Server listening on port 80');
 });

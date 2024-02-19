@@ -10,6 +10,6 @@ RUN apt-get update && apt-get install -y ffmpeg
 
 COPY . .
 
-EXPOSE 3051
+EXPOSE 80
 
 CMD ["node", "main.js"]
