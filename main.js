@@ -8,9 +8,28 @@ const app = express();
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
+const env = process.env;
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
+  next();
+});
+
+app.use((req, res, next) => {
+  // get authorization header from request
+  const apiKey = req.headers.authorization;
+
+  if (!apiKey) {
+    return res.status(401).send('No API key provided');
+  }
+
+  // get api key from environment variables
+  const envApiKey = process.env.API_KEY;
+
+  if (apiKey !== envApiKey) {
+    return res.status(403).send('Invalid API key');
+  }
+
   next();
 });
 
@@ -46,6 +65,6 @@ app.post('/convert', upload.single('file'), (req, res) => {
     .pipe(res);
 });
 
-app.listen(443, () => {
-  console.log('Server listening on port 443');
+app.listen(8080, () => {
+  console.log('Server listening on port 8080');
 });
